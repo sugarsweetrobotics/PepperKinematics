@@ -63,9 +63,9 @@ pepperkinematics_spec = ["implementation_id", "PepperKinematics",
 # @brief Pepper Kinematics RT-component
 # 
 # Pepper Manipulator Kinematics RT-component. When use this, install
-	pepper_kinematics module through pip.
-	To install,
-	#pip install pepper_kinematics
+#	pepper_kinematics module through pip.
+#	To install,
+#	#pip install pepper_kinematics
 # 
 # 
 class PepperKinematics(OpenRTM_aist.DataFlowComponentBase):
@@ -80,25 +80,38 @@ class PepperKinematics(OpenRTM_aist.DataFlowComponentBase):
 
 		"""
 		"""
-		self._manipMiddlePort = OpenRTM_aist.CorbaPort("manipMiddle")
+		self._rightManipMiddlePort = OpenRTM_aist.CorbaPort("rightManipMiddle")
 		"""
 		"""
-		self._manipCommonPort = OpenRTM_aist.CorbaPort("manipCommon")
+		self._rightManipCommonPort = OpenRTM_aist.CorbaPort("rightManipCommon")
+		"""
+		"""
+		self._leftManipMiddlePort = OpenRTM_aist.CorbaPort("leftManipMiddle")
+		"""
+		"""
+		self._leftManipCommonPort = OpenRTM_aist.CorbaPort("leftManipCommon")
 		"""
 		"""
 		self._motionPort = OpenRTM_aist.CorbaPort("motion")
 
 		"""
 		"""
-		self._manipMiddle = ManipulatorCommonInterface_Middle_i()
-		"""
-		"""
-		self._manipCommon = ManipulatorCommonInterface_Common_i()
-		
+		self._motion = OpenRTM_aist.CorbaConsumer(interfaceType=ssr.ALMotion)
 
 		"""
 		"""
-		self._motion = OpenRTM_aist.CorbaConsumer(interfaceType=ssr.ALMotion)
+		self._rightManipMiddle = ManipulatorCommonInterface_Middle_i('right', self._motion)
+		"""
+		"""
+		self._rightManipCommon = ManipulatorCommonInterface_Common_i('right', self._motion)
+		"""
+		"""
+		self._leftManipMiddle = ManipulatorCommonInterface_Middle_i('left', self._motion)
+		"""
+		"""
+		self._leftManipCommon = ManipulatorCommonInterface_Common_i('left', self._motion)
+		
+
 
 		# initialize of configuration-data.
 		# <rtc-template block="init_conf_param">
@@ -123,15 +136,20 @@ class PepperKinematics(OpenRTM_aist.DataFlowComponentBase):
 		# Set OutPort buffers
 		
 		# Set service provider to Ports
-		self._manipMiddlePort.registerProvider("ManipulatorCommonInterface_Middle", "JARA_ARM::ManipulatorCommonInterface_Middle", self._manipMiddle)
-		self._manipCommonPort.registerProvider("ManipulatorCommonInterface_Common", "JARA_ARM::ManipulatorCommonInterface_Common", self._manipCommon)
+		self._rightManipMiddlePort.registerProvider("JARA_ARM_ManipulatorCommonInterface_Middle", "JARA_ARM::ManipulatorCommonInterface_Middle", self._rightManipMiddle)
+		self._rightManipCommonPort.registerProvider("JARA_ARM_ManipulatorCommonInterface_Common", "JARA_ARM::ManipulatorCommonInterface_Common", self._rightManipCommon)
+
+		self._leftManipMiddlePort.registerProvider("JARA_ARM_ManipulatorCommonInterface_Middle", "JARA_ARM::ManipulatorCommonInterface_Middle", self._leftManipMiddle)
+		self._leftManipCommonPort.registerProvider("JARA_ARM_ManipulatorCommonInterface_Common", "JARA_ARM::ManipulatorCommonInterface_Common", self._leftManipCommon)
 		
 		# Set service consumers to Ports
 		self._motionPort.registerConsumer("ALMotion", "ssr::ALMotion", self._motion)
 		
 		# Set CORBA Service Ports
-		self.addPort(self._manipMiddlePort)
-		self.addPort(self._manipCommonPort)
+		self.addPort(self._rightManipMiddlePort)
+		self.addPort(self._rightManipCommonPort)
+		self.addPort(self._leftManipMiddlePort)
+		self.addPort(self._leftManipCommonPort)
 		self.addPort(self._motionPort)
 		
 		return RTC.RTC_OK

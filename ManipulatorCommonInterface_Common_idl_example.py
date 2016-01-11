@@ -21,12 +21,18 @@ class ManipulatorCommonInterface_Common_i (JARA_ARM__POA.ManipulatorCommonInterf
     Example class implementing IDL interface JARA_ARM.ManipulatorCommonInterface_Common
     """
 
-    def __init__(self):
+    def __init__(self, right_left, motion):
         """
         @brief standard constructor
         Initialise member variables here
         """
+        self._right_left = right_left
+        if not( right_left == 'right' or right_left == 'left' ):
+            raise InvalidArgException()
+
+        self._motion = motion
         pass
+
 
     # RETURN_ID clearAlarms()
     def clearAlarms(self):
