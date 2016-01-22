@@ -145,6 +145,7 @@ class ManipulatorCommonInterface_Middle_i (JARA_ARM__POA.ManipulatorCommonInterf
 
     # RETURN_ID movePTPCartesianRel(in CarPosWithElbow carPoint)
     def movePTPCartesianRel(self, carPoint):
+        print '[RTC.PepperKinematics] movePTPCartesianRel called.', carPoint
         self._angles = self._motion._ptr().getAngles(ssr.StringArray(self._tags), True)
         angle_sets = self._angles.data
         pos, ori = fk.calc_fk_and_jacob(angle_sets, False, self._right_left == 'right')
@@ -152,6 +153,10 @@ class ManipulatorCommonInterface_Middle_i (JARA_ARM__POA.ManipulatorCommonInterf
         target_ori = None
         epsilon = 0.1
         target_angles = ik.calc_inv_pos(angle_sets, target_pos, target_ori, epsilon, right=self._right_left == 'right')
+        if target_angles == None:
+            print '[RTC.PepperKinematics] Can not calculate Inverse Kinematics.'
+            result = JARA_ARM.RETURN_ID(JARA_ARM.NG, "Can not calculate inverse kinematics")
+            return result
         angles = [a for a in target_angles]
         self._motion._ptr().setAngles(ssr.StringArray(self._tags), ssr.FloatArray(angles), 1.0)
         result = JARA_ARM.RETURN_ID(JARA_ARM.OK, "")
